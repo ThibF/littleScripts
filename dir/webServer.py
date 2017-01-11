@@ -1,15 +1,7 @@
 from flask import Flask
 from flask import request
-from gmusicapi import Musicmanager
 import subprocess
-
-mm = Musicmanager()
-mm.login()
-try:
-    mm.login()
-except Exception as e:
-    print(e)
-    mm.perform_oauth()
+import sys
 
 with open('log','a') as logFile:
     logFile.write("App launched\n")
@@ -28,7 +20,7 @@ def hello_world():
         title = request.args.get('title').strip()
     except Exception as e:
         return "Title not correct"
-    uid=url[-12:]
+    uid=url[-11:]
     command=["youtube-dl"]
     command.append("--download-archive")
     command.append("catalogDownloaded.txt")
@@ -36,11 +28,10 @@ def hello_world():
     command.append("--audio-format")
     command.append("mp3")
     command.append("-o")
-    command.append("%(id)s.%(ext)s")
+    command.append("music/%(title)s.%(ext)s")
     command.append(uid)
     with open('log','a') as logFile:
         logFile.write(str(command))
         logFile.write("uid/"+str(uid)+"/")
     subprocess.check_call(command)
-    mm.upload("./"+str(uid)+".mp3")
-    return "SUCCESS,"+str(title)+".mp3 uploaded"
+    return "SUCCESS,"+str(title)+".mp3 in process"
